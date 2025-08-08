@@ -26,6 +26,7 @@ This document describes how the frontend, backend, and external services (YouTub
 ---
 
 ## 🔄 Game Flow Diagram
+```text
 ┌───────────────────┐
 │ Host creates room │
 └───────┬───────────┘
@@ -59,7 +60,7 @@ This document describes how the frontend, backend, and external services (YouTub
 ┌─────────────────────────┐
 │ Scoreboard updates │
 └─────────────────────────┘
-
+```
 ---
 
 ## 📡 Real-Time Events (Socket.io)
@@ -91,3 +92,4 @@ This document describes how the frontend, backend, and external services (YouTub
     { playerId: "socket456", videoId: "abc123", start: 30, end: 60 }
   ]
 }
+```
