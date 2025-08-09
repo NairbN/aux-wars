@@ -22,11 +22,11 @@ This document outlines the key development phases for Aux Wars, from the initial
 **Goal:** Allow players to join the same game lobby and exchange real-time messages.
 
 **Tasks:**
-- [ ] Implement backend socket server with room creation & joining.
-- [ ] Generate unique room codes for hosts.
-- [ ] Handle player join/leave events.
-- [ ] Broadcast updated player list to all clients in a room.
-- [ ] Create simple frontend lobby UI that shows connected players.
+- [x] Implement backend socket server with room creation & joining.
+- [x] Generate unique room codes for hosts.
+- [x] Handle player join/leave events.
+- [x] Broadcast updated player list to all clients in a room.
+- [x] Create simple frontend lobby UI that shows connected players.
 
 ---
 
