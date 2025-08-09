@@ -9,12 +9,12 @@ This document outlines the key development phases for Aux Wars, from the initial
 **Goal:** Create a clean foundation for development.
 
 **Tasks:**
-- [ ] Initialize GitHub repository with `.gitignore`, `README.md`, and `LICENSE`.
-- [ ] Set up `docs/` folder with initial files (`tech_stack.md`, `architecture.md`, `milestones.md`).
-- [ ] Create frontend project with React + Vite + Tailwind.
-- [ ] Create backend project with Node.js + Express + Socket.io.
-- [ ] Configure ESLint + Prettier for consistent code style.
-- [ ] Commit and push to GitHub.
+- [x] Initialize GitHub repository with `.gitignore`, `README.md`, and `LICENSE`.
+- [x] Set up `docs/` folder with initial files (`tech_stack.md`, `architecture.md`, `milestones.md`).
+- [x] Create frontend project with React + Vite + Tailwind.
+- [x] Create backend project with Node.js + Express + Socket.io.
+- [x] Configure ESLint + Prettier for consistent code style.
+- [x] Commit and push to GitHub.
 
 ---
 
