@@ -2,6 +2,8 @@
   "name": "aux-wars-frontend",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "root": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build",
