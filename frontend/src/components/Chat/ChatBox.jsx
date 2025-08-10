@@ -5,10 +5,11 @@ export default function ChatBox({ children }) {
     <div
       style={{
         marginTop: 20,
-        height: 150,
-        overflowY: "auto",
+        height: 400,
+        display: "flex",
+        flexDirection: "column",
         border: "1px solid #ccc",
-        padding: 8,
+        padding: 0,
         backgroundColor: "#f9f9f9",
       }}
     >

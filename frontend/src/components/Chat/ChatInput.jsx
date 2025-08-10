@@ -13,7 +13,7 @@ export default function ChatInput({ value, onChange, onSend }) {
         value={value}
         onChange={onChange}
         onKeyDown={handleKeyDown}
-        style={{ width: "100%", marginTop: 8, padding: 8 }}
+        style={{ width: "95%", marginTop: 8, padding: 8 }}
       />
       <button
         onClick={onSend}

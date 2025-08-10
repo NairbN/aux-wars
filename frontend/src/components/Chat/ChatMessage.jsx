@@ -2,7 +2,7 @@ import React from "react";
 
 export default function ChatMessage({ username, message, timestamp }) {
   return (
-    <div style={{ marginBottom: 4 }}>
+    <div style={{ marginBottom: 4, fontSize: 12 }}>
       <strong>{username}</strong>{" "}
       <span style={{ color: "#888" }}>
         [{new Date(timestamp).toLocaleTimeString()}]
