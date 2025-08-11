@@ -1,11 +1,18 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useLobby } from "../hooks/useLobby";
 import { useChat } from "../hooks/useChat";
+import { SocketProvider, useSocket } from "../context/SocketContext";
 import PlayerList from "../components/PlayerList";
 import Chat from "../components/Chat/Chat"; 
+import Game from "../pages/Game";
+import JoinRoomForm from "../components/JoinRoomForm";
+import RoomControls from "../components/RoomControls"; // <-- Make sure this import exists
 
 export default function Lobby() {
-  console.log("Lobby component rendered");
+  const socket = useSocket();
+
+  const [gameStarted, setGameStarted] = useState(false);
+
   const {
     username,
     setUsername,
@@ -26,6 +33,7 @@ export default function Lobby() {
     sendMessage,
   } = useChat(currentRoom, username);
 
+
   const messagesEndRef = useRef(null);
 
   // Auto-scroll chat to bottom when messages change
@@ -33,33 +41,33 @@ export default function Lobby() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  useEffect(() => {
+    socket.on("startGame", () => {
+      setGameStarted(true);
+    });
+
+    return () => {
+      socket.off("startGame");
+    };
+  }, [socket]);
+
+
+
   return (
     <div style={{ padding: 20, fontFamily: "sans-serif", maxWidth: 400, margin: "auto" }}>
       <h1>Game Lobby</h1>
 
       {!currentRoom ? (
-        <>
-          <input
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            style={{ width: "100%", marginBottom: 8, padding: 8 }}
-          />
-          <input
-            placeholder="Room Code"
-            value={roomCode}
-            onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-            style={{ width: "100%", marginBottom: 8, padding: 8, textTransform: "uppercase" }}
-          />
-          <button onClick={createRoom} style={{ width: "100%", padding: 10, marginBottom: 8 }}>
-            Create Room
-          </button>
-          <button onClick={joinRoom} style={{ width: "100%", padding: 10 }}>
-            Join Room
-          </button>
-          {error && <p style={{ color: "red", marginTop: 8 }}>{error}</p>}
-        </>
-      ) : (
+        <JoinRoomForm
+          username={username}
+          setUsername={setUsername}
+          roomCode={roomCode}
+          setRoomCode={setRoomCode}
+          createRoom={createRoom}
+          joinRoom={joinRoom}
+          error={error}
+        />
+      ) : !gameStarted ? (
         <>
           <p><strong>Room Code:</strong> {currentRoom}</p>
 
@@ -76,7 +84,17 @@ export default function Lobby() {
             sendMessage={sendMessage}
             messagesEndRef={messagesEndRef}
           />
+
+          <RoomControls
+            hostId= {players[0]?.id}
+            userId={socket?.id}
+            roomCode={currentRoom}
+            setGameStarted={setGameStarted}
+            players={players}
+          />
         </>
+      ) : (
+        <Game players={players} userId={socket.id} roomCode={currentRoom} />
       )}
     </div>
   );

@@ -1,11 +1,6 @@
 import React from "react";
-import Lobby from "./pages/Lobby";
-import { SocketProvider } from "./context/SocketContext";
+import Home from "./pages/Home"; // <-- Import Home
 
 export default function App() {
-  return (
-    <SocketProvider>
-      <Lobby />
-    </SocketProvider>
-  );
+  return <Home />; // <-- Render Home, not Lobby
 }

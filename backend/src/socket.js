@@ -3,6 +3,9 @@ import {
   joinRoom,
   leaveRoom,
   getPlayers,
+  startRound,
+  submitVideo,
+  getRoundInfo,
 } from './rooms/roomManager.js';
 
 export default function setupSocketHandlers(io) {
@@ -78,6 +81,42 @@ export default function setupSocketHandlers(io) {
         message,
         timestamp,
       });
+    });
+
+    socket.on('startGame', ({ roomCode, roundTime, judgeRounds }) => {
+      io.to(roomCode).emit('startGame', { roundTime, judgeRounds });
+    });
+
+    // Judge starts a round by setting the theme
+    socket.on('startRound', ({ roomCode, theme }) => {
+      const result = startRound(roomCode, theme);
+      if (result.error) {
+        socket.emit('error', result.error);
+        return;
+      }
+      io.to(roomCode).emit('roundStarted', { theme });
+    });
+
+    // Player submits a video clip
+    socket.on('submitVideo', ({ roomCode, videoId, start, end }) => {
+      const result = submitVideo(roomCode, socket.id, videoId, start, end);
+      if (result.error) {
+        socket.emit('error', result.error);
+        return;
+      }
+      io.to(roomCode).emit('submissionsUpdated', {
+        submissions: result.submissions,
+      });
+    });
+
+    // Player requests current round info (for joining mid-round)
+    socket.on('getRoundInfo', ({ roomCode }) => {
+      const info = getRoundInfo(roomCode);
+      if (info.error) {
+        socket.emit('error', info.error);
+        return;
+      }
+      socket.emit('roundInfo', info);
     });
   });
 }
