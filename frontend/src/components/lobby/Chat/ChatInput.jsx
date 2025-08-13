@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "../../../styles/components/ChatInput.module.css";
 
 export default function ChatInput({ value, onChange, onSend }) {
   const handleKeyDown = (e) => {
@@ -13,12 +14,9 @@ export default function ChatInput({ value, onChange, onSend }) {
         value={value}
         onChange={onChange}
         onKeyDown={handleKeyDown}
-        style={{ width: "95%", marginTop: 8, padding: 8 }}
+        className={styles.input}
       />
-      <button
-        onClick={onSend}
-        style={{ width: "100%", marginTop: 4, padding: 10 }}
-      >
+      <button onClick={onSend} className={styles.button}>
         Send
       </button>
     </>

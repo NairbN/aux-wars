@@ -1,17 +1,19 @@
-// components/Chat/Chat.jsx
 import React from "react";
+import styles from "../../../styles/components/Chat.module.css";
 import ChatBox from "./ChatBox";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 
-export default function Chat({ messages, chatInput, setChatInput, sendMessage, messagesEndRef }) {
+export default function Chat({ 
+  messages, 
+  chatInput, 
+  setChatInput, 
+  sendMessage, 
+  messagesEndRef 
+}) {
   return (
     <ChatBox>
-      <div style={{
-        flex: 1,
-        overflowY: "auto",
-        padding: "8px 0"
-      }}>
+      <div className={styles.messageList}>
         {messages.map((msg, index) => (
           <ChatMessage
             key={index}
@@ -22,11 +24,7 @@ export default function Chat({ messages, chatInput, setChatInput, sendMessage, m
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div style={{
-        borderTop: "1px solid #eee",
-        padding: "8px",
-        background: "#fafafa"
-      }}>
+      <div className={styles.inputWrapper}>
         <ChatInput
           value={chatInput}
           onChange={(e) => setChatInput(e.target.value)}

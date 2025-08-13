@@ -1,8 +1,9 @@
 import React from "react";
+import styles from "../../../styles/components/ChatMessage.module.css";
 
 export default function ChatMessage({ username, message, timestamp }) {
   return (
-    <div style={{ marginBottom: 4, fontSize: 12 }}>
+    <div className={styles.chatMessage}>
       <strong>{username}</strong>{" "}
       <span style={{ color: "#888" }}>
         [{new Date(timestamp).toLocaleTimeString()}]

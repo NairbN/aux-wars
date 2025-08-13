@@ -1,73 +1,97 @@
+// hooks/useLobby.jsx
 import { useState, useEffect } from "react";
 import { useSocket } from "../context/SocketContext";
 
 export function useLobby() {
+  const socket = useSocket(); // now guaranteed non-null thanks to guard in useSocket
 
-  const socket = useSocket();
   const [username, setUsername] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [players, setPlayers] = useState([]);
   const [currentRoom, setCurrentRoom] = useState(null);
+  const [hostId, setHostId] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [error, setError] = useState("");
 
+  // Set userId on connect
   useEffect(() => {
-    
+    if (!socket) return; // extra guard, just in case
 
-    socket.on("roomCreated", ({ roomCode, players }) => {
-      setCurrentRoom(roomCode);
-      setPlayers(players);
-      setError("");
-    });
+    const handleConnect = () => setUserId(socket.id);
 
-    socket.on("roomJoined", ({ roomCode, players }) => {
-      setCurrentRoom(roomCode);
-      setPlayers(players);
-      setError("");
-    });
-
-    socket.on("playerList", (players) => {
-      setPlayers(players);
-    });
-
-    socket.on("error", (message) => {
-      setError(message);
-    });
+    if (socket.connected) {
+      setUserId(socket.id);
+    } else {
+      socket.on("connect", handleConnect);
+    }
 
     return () => {
-      socket.off("roomCreated");
-      socket.off("roomJoined");
-      socket.off("playerList");
-      socket.off("error");
+      socket.off("connect", handleConnect);
     };
   }, [socket]);
 
-function createRoom() {
-  console.log("createRoom clicked, username:", username);
-  if (!username.trim()) {
-    setError("Please enter a username");
-    return;
-  }
-  if (!socket.connected) socket.connect();  // Connect only if not connected
-  socket.emit("createRoom", { username });
-}
+  // Listen for socket events
+  useEffect(() => {
+    if (!socket) return;
 
-function joinRoom() {
-  console.log("joinRoom clicked, username:", username, "roomCode:", roomCode);
-  if (!username.trim() || !roomCode.trim()) {
-    setError("Please enter username and room code");
-    return;
+    const handleRoomCreated = ({ roomCode, players }) => {
+      setCurrentRoom(roomCode);
+      setRoomCode(roomCode);
+      setPlayers(players);
+      setHostId(players[0]?.id || null);
+      setError("");
+    };
+
+    const handleRoomJoined = ({ roomCode, players }) => {
+      setCurrentRoom(roomCode);
+      setRoomCode(roomCode);
+      setPlayers(players);
+      setError("");
+    };
+
+    socket.on("roomCreated", handleRoomCreated);
+    socket.on("roomJoined", handleRoomJoined);
+    socket.on("playerList", setPlayers);
+    socket.on("error", setError);
+
+    return () => {
+      socket.off("roomCreated", handleRoomCreated);
+      socket.off("roomJoined", handleRoomJoined);
+      socket.off("playerList", setPlayers);
+      socket.off("error", setError);
+    };
+  }, [socket]);
+
+  // Debug
+  useEffect(() => {
+    console.log("hostId:", hostId, "userId:", userId);
+  }, [hostId, userId]);
+
+  // Actions
+  function createRoom() {
+    if (!username.trim()) return setError("Please enter a username");
+    if (!socket.connected) socket.connect();
+    socket.emit("createRoom", { username });
   }
-  if (!socket.connected) socket.connect();
-  socket.emit("joinRoom", { username, roomCode });
-}
+
+  function joinRoom() {
+    if (!username.trim() || !roomCode.trim()) {
+      return setError("Please enter username and room code");
+    }
+    if (!socket.connected) socket.connect();
+    socket.emit("joinRoom", { username, roomCode });
+  }
 
   function leaveRoom() {
-    socket.disconnect();
+    if (socket.connected) socket.disconnect();
+
     setCurrentRoom(null);
     setPlayers([]);
     setError("");
     setRoomCode("");
-    window.location.reload();
+    setHostId(null);
+    setUserId(null);
+    setUsername("");
   }
 
   return {
@@ -77,10 +101,11 @@ function joinRoom() {
     setRoomCode,
     players,
     currentRoom,
+    hostId,
+    userId,
     error,
     createRoom,
     joinRoom,
     leaveRoom,
   };
 }
-

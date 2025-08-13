@@ -1,45 +1,73 @@
-import { useState, useEffect, useRef } from "react";
-import { useSocket } from "../context/SocketContext";
+import { useState, useEffect, useRef } from 'react';
+import { useSocket } from '../context/SocketContext';
 
-export function useChat(roomCode, username) {
+export const useChat = (roomCode, username) => {
   const socket = useSocket();
   const [messages, setMessages] = useState([]);
-  const [chatInput, setChatInput] = useState("");
+  const [chatInput, setChatInput] = useState('');
   const messagesEndRef = useRef(null);
 
+  // Load existing messages
+  const loadMessages = () => {
+    if (socket && roomCode) {
+      socket.emit('getChatHistory', { roomCode });
+    }
+  };
+
+  // Send message
+const sendMessage = (message) => {
+  if (socket && socket.connected && roomCode && username && message.trim()) {
+    console.log("Sending message:", message);
+    socket.emit('sendMessage', { roomCode, username, message: message.trim() });
+    setChatInput('');
+  } else {
+    console.warn("Failed to send message due to missing data or socket disconnected");
+  }
+};
+
+
+  // Auto-scroll effect
   useEffect(() => {
-    console.log("useChat running");
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-    if (!roomCode) return;
+  // Socket event listeners
+  useEffect(() => {
+    if (!socket || !roomCode) return;
 
-    socket.on("receiveMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
+    if (!socket.connected) {
+      socket.connect();
+      console.log("Socket connected:", socket.connected);
+    }
+
+    const onChatHistory = (chatHistory) => {
+      console.log("Received chatHistory:", chatHistory);
+      setMessages(chatHistory);
+    };
+
+    const onChatMessage = (message) => {
+      console.log("Received chatMessage:", message);
+      setMessages(prev => [...prev, message]);
+    };
+
+    socket.on('chatHistory', onChatHistory);
+    socket.on('receiveMessage', onChatMessage);
+
+    loadMessages(); 
 
     return () => {
-      socket.off("receiveMessage");
+      socket.off('chatHistory', onChatHistory);
+      socket.off('receiveMessage', onChatMessage);
     };
   }, [socket, roomCode]);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  function sendMessage() {
-    if (!chatInput.trim()) return;
-    socket.emit("sendMessage", {
-      roomCode,
-      username,
-      message: chatInput,
-    });
-    setChatInput(""); // clear after sending
-  }
 
   return {
     messages,
     chatInput,
     setChatInput,
     sendMessage,
-    messagesEndRef
+    messagesEndRef,
+    loadMessages
   };
-}
+};

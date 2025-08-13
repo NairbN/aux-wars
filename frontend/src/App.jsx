@@ -1,6 +1,6 @@
 import React from "react";
-import Home from "./pages/Home"; // <-- Import Home
+import AppRouter from "./router/AppRouter";
 
 export default function App() {
-  return <Home />; // <-- Render Home, not Lobby
+  return <AppRouter />;
 }

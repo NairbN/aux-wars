@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useSocket } from "../context/SocketContext"; // adjust import as needed
+import { useNavigate } from "react-router-dom";
+import { useSocket } from "../../context/SocketContext"; // adjust import as needed
 
 export default function Game({ players = [], userId, roomCode }) {
   const socket = useSocket();
   const [judgeId, setJudgeId] = useState(null);
   const [currentTheme, setCurrentTheme] = useState(null);
   const [submissions, setSubmissions] = useState([]);
+
+    const navigate = useNavigate();
+  
+    useEffect(() => {
+      if (roomCode) {
+        navigate(`/game/${roomCode}`); 
+      }
+    }, [roomCode, navigate]);
 
   useEffect(() => {
     if (!socket) return;
