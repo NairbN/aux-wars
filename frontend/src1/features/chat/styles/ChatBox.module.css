@@ -1,0 +1,11 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 400px;      /* Fixed height or responsive */
+  width: 100%;
+  max-width: 400px;   /* Limit max width */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  font-family: sans-serif;
+}
